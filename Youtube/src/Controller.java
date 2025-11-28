@@ -17,4 +17,9 @@ public class Controller {
     public void selectAndPlay(int index, Scanner sc) throws SQLException {
         publicList.selectAndPlay(user, index, sc);
     }
+   // METHOD UPLOAD - BARIS 68-71
+public void uploadVideo(Video video) throws SQLException {
+    channel.uploadVideo(video);
+    publicList.addVideo(video);
+}
 }
