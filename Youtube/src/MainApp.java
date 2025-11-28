@@ -1,0 +1,100 @@
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
+
+public class MainApp {
+    public static Controller controller = Controller.getInstance();
+    public static ConnectDB konektor = ConnectDB.getInstance();
+    public static boolean logOut = false;
+    public static void main(String[] args) throws SQLException {
+        Scanner sc = new Scanner(System.in);
+        int action;
+        boolean checkAction = false;
+
+        System.out.println("=== WELCOME TO YOUTUBE ===");
+        while (true) {
+            printCommand(new String[] { "Register", "Login", "Video Page", "Exit" });
+            System.out.print("Pick your Action: ");
+            action = sc.nextInt();
+            System.out.println();
+            switch (action) {
+                case 1:
+                    checkAction = registerPage(sc);
+                    break;
+                case 2:
+                    checkAction = loginPage(sc);
+                    break;
+                case 3:
+                    videoPage(sc);
+                    break;
+                case 4:
+                    System.out.println("Goodbye!");
+                    return;
+                default:
+                    System.out.println("Command is not valid!");
+                    break;
+            }
+            if (checkAction) {
+                if (controller.importBrandchannel()) {
+                    if (controller.importChannel()) {
+                        homePageContentCreatorHaveChannel(sc);
+                    }
+                    else {
+                        homePageContentCreatorNoChannel(sc);
+                    }
+                }
+                else {
+                    if (controller.importChannel()) {
+                    homePageHaveChannel(sc);
+                    }
+                    else {
+                        homePageNoChannel(sc);
+                    }
+                }
+            }
+        }
+    }
+
+    /*
+     * Page untuk register bagi pengguna baru
+     * Pengguna perlu memasukkan email, username, dan password
+     * Email akan dicek di database untuk memastikan belum pernah terdaftar
+     */
+    public static boolean registerPage(Scanner sc) throws SQLException {
+        System.out.println();
+        String email, password, username;
+        boolean check;
+
+        sc.nextLine();
+        System.out.println("==== REGISTER =====");
+        System.out.print("Email: ");
+        email = sc.nextLine();
+
+        System.out.print("Username: ");
+        username = sc.nextLine();
+
+        System.out.print("Password: ");
+        password = sc.nextLine();
+
+        check = controller.register(email, username, password);
+        if (!check) {
+            System.out.println("Email already registered!\n");
+        }
+        else {
+            System.out.println("Register success!\n");
+        }
+        return check;
+    }
+
+    public static void printCommand(String[] command) {
+        System.out.println("==================");
+        for (int i = 0; i < command.length; i++) {
+            System.out.printf("[%d] %s\n", i + 1, command[i]);
+        }
+        System.out.println("==================");
+    }
+
+    public void getCurrentUser() {
+        // return user;
+    }
+}
