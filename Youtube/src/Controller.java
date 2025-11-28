@@ -22,5 +22,12 @@ public class Controller {
         channel.exportChannel();
 
         return channel != null;
+    public User getUser() {
+        return user;
+    }
+
+    public boolean login(String email, String password) throws SQLException {
+        user = User.login(email, password);
+        return user != null;
     }
 }
