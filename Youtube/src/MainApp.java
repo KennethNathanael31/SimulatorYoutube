@@ -75,7 +75,7 @@ public class MainApp {
         tipeChannel = sc.nextInt();
 
         return controller.makeChannel(nama, deskripsi, tipeChannel);
-    // PAGE LOGIN - BARIS 88-111
+    }
     public static boolean loginPage(Scanner sc) throws SQLException {
         System.out.println();
         String email, password;

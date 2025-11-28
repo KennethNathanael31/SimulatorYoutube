@@ -22,6 +22,8 @@ public class Controller {
         channel.exportChannel();
 
         return channel != null;
+    }
+  
     public User getUser() {
         return user;
     }
