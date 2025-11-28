@@ -16,6 +16,12 @@ public class Controller {
         return instance;
     }
 
+    public boolean makeChannel(String nama, String deskripsi, int tipeChannel) throws SQLException {
+        channel = Channel.makeChannel(user.getIdPengguna(), nama, deskripsi, tipeChannel);
+        channel.import_ID_for_NewChannel(nama, deskripsi, tipeChannel);
+        channel.exportChannel();
+
+        return channel != null;
     public User getUser() {
         return user;
     }

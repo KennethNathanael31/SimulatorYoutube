@@ -55,6 +55,26 @@ public class MainApp {
         }
     }
 
+    // PAGE MEMBUAT CHANNEL - BARIS 183-203
+    public static boolean makeChannelPage(Scanner sc) throws SQLException {
+        System.out.println();
+        String nama, deskripsi;
+        int tipeChannel;
+
+        System.out.print("Channel Name : ");
+        sc.nextLine();
+        nama = sc.nextLine();
+
+        System.out.print("Channel Description : ");
+        deskripsi = sc.nextLine();
+
+        System.out.println("==== CHANNEL TYPE (Individual = 1 | Group = 2) ====");
+        System.out.println("1. Individual");
+        System.out.println("2. Group");
+        System.out.print("Channel type (1 / 2): ");
+        tipeChannel = sc.nextInt();
+
+        return controller.makeChannel(nama, deskripsi, tipeChannel);
     // PAGE LOGIN - BARIS 88-111
     public static boolean loginPage(Scanner sc) throws SQLException {
         System.out.println();
