@@ -3,36 +3,9 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Controller {
-    private User user;
-
-    private Controller() {
-        publicList = new VideoList();
-    }
-
-    public static Controller getInstance() {
-        if (instance == null) {
-            instance = new Controller();
-        }
-        return instance;
-    }
-
-    public boolean makeChannel(String nama, String deskripsi, int tipeChannel) throws SQLException {
-        channel = Channel.makeChannel(user.getIdPengguna(), nama, deskripsi, tipeChannel);
-        channel.import_ID_for_NewChannel(nama, deskripsi, tipeChannel);
-        channel.exportChannel();
-
-        return channel != null;
-    }
-  
-    public User getUser() {
-        return user;
-    }
-
-    public boolean register(String email, String username, String password) throws SQLException {
-        user = User.register(email, username, password);
-    }
-    public boolean login(String email, String password) throws SQLException {
-        user = User.login(email, password);
-        return user != null;
-    }
+   // METHOD UPLOAD - BARIS 68-71
+public void uploadVideo(Video video) throws SQLException {
+    channel.uploadVideo(video);
+    publicList.addVideo(video);
+}
 }

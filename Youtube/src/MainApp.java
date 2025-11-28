@@ -3,212 +3,160 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class MainApp {
-    public static Controller controller = Controller.getInstance();
-    public static ConnectDB konektor = ConnectDB.getInstance();
-    public static boolean logOut = false;
-    public static void main(String[] args) throws SQLException {
-        Scanner sc = new Scanner(System.in);
-        int action;
-        boolean checkAction = false;
+    
 
-        System.out.println("=== WELCOME TO YOUTUBE ===");
+    /*
+     * Page untuk melihat detail channel grup
+     * Pengguna dapat mengupload, melihat upload, menghapus video, edit video, melihat 
+     * detail channel, melihat laporan, dan mengatur member yang masuk ke dalam grup
+     */
+    public static void myChannelGroupPage(Scanner sc) throws SQLException {
+        System.out.println();
         while (true) {
-            printCommand(new String[] { "Register", "Login", "Video Page", "Exit" });
-            System.out.print("Pick your Action: ");
-            action = sc.nextInt();
-            System.out.println();
-            switch (action) {
+            System.out.println("=== MY CHANNEL PAGE ===");
+            printCommand(new String[] {"Upload Video", "See Uploaded Videos", "Remove Video", "Edit Video", "Channel Detail", 
+                            "View Report", "Edit Member","Edit Channel", "Back"});
+            System.out.print("Pick your action: ");
+            int choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
                 case 1:
-                    checkAction = registerPage(sc);
+                    System.out.print("Video Title: ");
+                    String title = sc.nextLine();
+
+                    System.out.print("Video Description: ");
+                    String desc = sc.nextLine();
+
+                    System.out.print("Video Duration (in seconds): ");
+                    int duration = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.print("Video File URL (https://www.youtube.com/watch?v=Bwgnw0muVlY): ");
+                    String videoPath = sc.nextLine();
+
+                    System.out.print("Subtitle Text File Path (C:\\Users\\vandy\\Downloads\\subtitle.txt): ");
+                    String subPath = sc.nextLine();
+                    Video newVid = new Video(title, duration,  desc, subPath, videoPath, controller.getUser().getIdPengguna(),controller.getChannel().getIdKanal());
+                    controller.uploadVideo(newVid);
                     break;
+
                 case 2:
-                    checkAction = loginPage(sc);
+                    controller.printAllVideos();
                     break;
+
                 case 3:
-                    videoPage(sc);
+                    controller.printAllVideos();
+                    System.out.print("Enter video index to remove: ");
+                    int removeIdx = sc.nextInt() - 1;
+                    sc.nextLine();
+                    controller.removeVideo(removeIdx);
                     break;
+
                 case 4:
-                    System.out.println("Goodbye!");
+                    controller.printAllVideos();
+                    System.out.print("Enter video index to edit: ");
+                    int editIdx = sc.nextInt() - 1;
+                    sc.nextLine();
+                    editVideoMenu(sc, editIdx, controller.getChannel());
+                    break;
+
+                case 5:
+                    controller.getChannelDetail(sc);
+                    break;
+
+                case 6:
+                    reportPage(sc, controller.getChannel());
+                    break;
+
+                case 7:
+                    editMemberMenu(sc, (ChannelGrup) controller.getChannel());
+                    break;
+                case 8:
+                    EditChannelPage(sc, controller.getChannel());
+                    break;
+                case 9:
                     return;
                 default:
-                    System.out.println("Command is not valid!");
-                    break;
-            }
-            if (checkAction) {
-                if (controller.importBrandchannel()) {
-                    if (controller.importChannel()) {
-                        homePageContentCreatorHaveChannel(sc);
-                    }
-                    else {
-                        homePageContentCreatorNoChannel(sc);
-                    }
-                }
-                else {
-                    if (controller.importChannel()) {
-                    homePageHaveChannel(sc);
-                    }
-                    else {
-                        homePageNoChannel(sc);
-                    }
-                }
+                    System.out.println("Invalid option.");
             }
         }
     }
 
     /*
-     * Page untuk register bagi pengguna baru
-     * Pengguna perlu memasukkan email, username, dan password
-     * Email akan dicek di database untuk memastikan belum pernah terdaftar
+     * Page untuk melihat detail channel individu
+     * Pengguna dapat mengupload, melihat upload, menghapus video, edit video, melihat 
+     * detail channel, dan melihat laporan
      */
-    public static boolean registerPage(Scanner sc) throws SQLException {
-        System.out.println();
-        String email, password, username;
-        boolean check;
-
-        sc.nextLine();
-        System.out.println("==== REGISTER =====");
-        System.out.print("Email: ");
-        email = sc.nextLine();
-
-        System.out.print("Username: ");
-        username = sc.nextLine();
-
-        System.out.print("Password: ");
-        password = sc.nextLine();
-
-        check = controller.register(email, username, password);
-        if (!check) {
-            System.out.println("Email already registered!\n");
-        }
-        else {
-            System.out.println("Register success!\n");
-        }
-    } 
-      public static boolean makeChannelPage(Scanner sc) throws SQLException {
-        System.out.println();
-        String nama, deskripsi;
-        int tipeChannel;
-
-        System.out.print("Channel Name : ");
-        sc.nextLine();
-        nama = sc.nextLine();
-
-        System.out.print("Channel Description : ");
-        deskripsi = sc.nextLine();
-
-        System.out.println("==== CHANNEL TYPE (Individual = 1 | Group = 2) ====");
-        System.out.println("1. Individual");
-        System.out.println("2. Group");
-        System.out.print("Channel type (1 / 2): ");
-        tipeChannel = sc.nextInt();
-
-        return controller.makeChannel(nama, deskripsi, tipeChannel);
-    }
-    public static boolean loginPage(Scanner sc) throws SQLException {
-        System.out.println();
-        String email, password;
-        boolean check;
-
-        System.out.println("==== LOGIN =====");
-        sc.nextLine();
-
-        System.out.print("Email: ");
-        email = sc.nextLine();
-
-        System.out.print("Password: ");
-        password = sc.nextLine();
-
-        check = controller.login(email, password);
-
-        if (!check) {
-            System.out.println("Wrong email or password!\n");
-        }
-        else {
-            System.out.println("Login successfull!\n");
-        }
-        return check;
-    }
-
-    /*
-     * Home page bagi pengguna yang belum pernah membuat channel
-     * Pengguna dapat membuat channel, menonton video, melihat subscriber, dan log out
-     * Jika pengguna membuat channel, akan langsung dialihkan ke home page yang sudah memiliki channel
-     */
-    public static void homePageNoChannel(Scanner sc) throws SQLException{
-        System.out.println();
-        System.out.printf("=== WELCOME TO YOUTUBE %s ===\n", controller.getUser().getNamaPengguna());
-        boolean check = false;
-
+    public static void myChannelPage(Scanner sc) throws SQLException {
+        User user = controller.getUser();
+        Channel myChannel = controller.getChannel();
         while (true) {
-            printCommand(new String[] { "Create Channel", "Video Page", "Subscription", "Log Out" });
-            System.out.print("Pick your Action : ");
-            int action = sc.nextInt();
-            System.out.println();
+            System.out.println("==== MY CHANNEL PAGE ====");
+            printCommand(new String[] {"Upload Video", "See Uploaded Videos", "Remove Video", "Edit Video", "Channel Detail", 
+                            "View Report","Edit Channel", "Back"});
+            System.out.print("Pick your action: ");
+            int choice = sc.nextInt();
+            sc.nextLine();
 
-            switch (action) {
+            switch (choice) {
                 case 1:
-                    check = makeChannelPage(sc);
+                    System.out.print("Video Title: ");
+                    String title = sc.nextLine();
+
+                    System.out.print("Video Description: ");
+                    String desc = sc.nextLine();
+
+                    System.out.print("Video Duration (in seconds): ");
+                    int duration = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.print("Video File URL (https://www.youtube.com/watch?v=Bwgnw0muVlY): ");
+                    String videoPath = sc.nextLine();
+
+                    System.out.print("Subtitle Text File Path (C:\\Users\\vandy\\Downloads\\subtitle.txt): ");
+                    String subPath = sc.nextLine();
+
+                    Video newVid = new Video(title, duration, desc, subPath, videoPath, user.getIdPengguna(),myChannel.getIdKanal());
+                    controller.uploadVideo(newVid);
                     break;
+
                 case 2:
-                    videoPage(sc);
+                    controller.printAllVideos();
                     break;
+
                 case 3:
-                    subscribePage(sc);
+                    controller.printAllVideos();
+                    System.out.print("Enter video index to remove: ");
+                    int removeIdx = sc.nextInt() - 1;
+                    sc.nextLine();
+                    controller.removeVideo(removeIdx);
                     break;
+
                 case 4:
-                    return;
+                    controller.printAllVideos();
+                    System.out.print("Enter video index to edit: ");
+                    int editIdx = sc.nextInt() - 1;
+                    sc.nextLine();
+                    editVideoMenu(sc, editIdx, controller.getChannel());
+                    break;
+
+                case 5:
+                    controller.getChannelDetail(sc);
+                    break;
+
+                case 6:
+                    reportPage(sc, controller.getChannel());
+                    break;
+                case 7:
+                    EditChannelPage(sc, controller.getChannel());
+                    break;
+                case 8:
+                    return; // Back to HomePage
                 default:
-                    System.out.println("Command is not valid!");
-                    break;
-            }
-
-            if (check) {
-                homePageHaveChannel(sc);
-                break;
-            }
-        }
-    }
-    public static void homePageHaveChannel(Scanner sc) throws SQLException{
-        System.out.println();
-        System.out.printf("=== WELCOME TO YOUTUBE %s ===\n", controller.getUser().getNamaPengguna());
-        while (true) {
-            printCommand(new String[] { "My Channel", "Video Page", "Subscription", "Log Out" });
-            System.out.print("Pick your Action : ");
-            int action = sc.nextInt();
-            System.out.println();
-
-            switch (action) {
-                case 1:
-                    if (controller.getChannel() instanceof ChannelGrup) {
-                        myChannelGroupPage(sc);
-                    } else {
-                        myChannelPage(sc);
-                    }
-                    break;
-                case 2:
-                    videoPage(sc);
-                    break;
-                case 3:
-                    subscribePage(sc);
-                    break;
-                case 4:
-                    return;
-                default:
-                    System.out.println("Command is not valid!");
-                    break;
+                    System.out.println("Invalid option.");
             }
         }
     }
 
-    public static void printCommand(String[] command) {
-        System.out.println("==================");
-        for (int i = 0; i < command.length; i++) {
-            System.out.printf("[%d] %s\n", i + 1, command[i]);
-        }
-        System.out.println("==================");
-    }
-
-    public void getCurrentUser() {
-        // return user;
-    }
 }
