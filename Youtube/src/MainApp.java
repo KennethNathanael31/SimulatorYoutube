@@ -55,8 +55,36 @@ public class MainApp {
         }
     }
 
-    // PAGE MEMBUAT CHANNEL - BARIS 183-203
-    public static boolean makeChannelPage(Scanner sc) throws SQLException {
+    /*
+     * Page untuk register bagi pengguna baru
+     * Pengguna perlu memasukkan email, username, dan password
+     * Email akan dicek di database untuk memastikan belum pernah terdaftar
+     */
+    public static boolean registerPage(Scanner sc) throws SQLException {
+        System.out.println();
+        String email, password, username;
+        boolean check;
+
+        sc.nextLine();
+        System.out.println("==== REGISTER =====");
+        System.out.print("Email: ");
+        email = sc.nextLine();
+
+        System.out.print("Username: ");
+        username = sc.nextLine();
+
+        System.out.print("Password: ");
+        password = sc.nextLine();
+
+        check = controller.register(email, username, password);
+        if (!check) {
+            System.out.println("Email already registered!\n");
+        }
+        else {
+            System.out.println("Register success!\n");
+        }
+    } 
+      public static boolean makeChannelPage(Scanner sc) throws SQLException {
         System.out.println();
         String nama, deskripsi;
         int tipeChannel;

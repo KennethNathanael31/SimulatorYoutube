@@ -55,6 +55,51 @@ public class User {
         return idPengguna == u.idPengguna;
     }
 
+    public static User register(String email, String namaPengguna, String passwordPengguna) throws SQLException {
+        if (checkRegister(email)) {
+            return null;
+        }
+
+        String query = """
+                    INSERT INTO Pengguna (
+                        Pengguna.namaPengguna, 
+                        Pengguna.passwordPengguna,
+                        Pengguna.email,
+                        Pengguna.tanggalPembuatanAkun,
+                        Pengguna. tipePengguna
+                    )
+                    VALUES (?, ?, ?, ?, ?)
+                """;
+        PreparedStatement ps = MainApp.konektor.getConnection().prepareStatement(query);
+        ps.setString(1, namaPengguna);
+        ps.setString(2, passwordPengguna);
+        ps.setString(3, email);
+        ps.setDate(4, Date.valueOf(LocalDate.now()));
+        ps.setInt(5, 1);
+        MainApp.konektor.updateTable(ps);
+        
+        ResultSet rs = importUser(email, passwordPengguna);
+        rs.next();
+        
+        return new User(rs.getInt(1), email, namaPengguna);
+    }
+
+    private static boolean checkRegister(String email) throws SQLException {
+        String query = """
+                    SELECT 
+                        p.idPengguna
+                    FROM 
+                        Pengguna p
+                    WHERE
+                        p.email = ?
+                """;
+
+        PreparedStatement ps = MainApp.konektor.getConnection().prepareStatement(query);
+        ps.setString(1, email);
+
+        ResultSet tempPS = MainApp.konektor.getTable(ps); 
+        return tempPS.next();
+    }
     // HELPER METHOD UNTUK LOGIN - BARIS 127-140
     private static ResultSet importUser(String email, String passwordPengguna) throws SQLException {
         String query = """
