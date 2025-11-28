@@ -19,4 +19,9 @@ public class Controller {
     public User getUser() {
         return user;
     }
+
+    public boolean register(String email, String username, String password) throws SQLException {
+        user = User.register(email, username, password);
+        return user != null;
+    }
 }
