@@ -100,4 +100,33 @@ public class User {
         ResultSet tempPS = MainApp.konektor.getTable(ps); 
         return tempPS.next();
     }
+    // HELPER METHOD UNTUK LOGIN - BARIS 127-140
+    private static ResultSet importUser(String email, String passwordPengguna) throws SQLException {
+        String query = """
+                SELECT 
+                    Pengguna.idPengguna,
+                    Pengguna.email,
+                    Pengguna.namaPengguna
+                FROM 
+                    Pengguna 
+                WHERE 
+                    email = ? AND 
+                    passwordPengguna = ?;
+            """;
+
+        PreparedStatement ps = MainApp.konektor.getConnection().prepareStatement(query);
+        ps.setString(1, email);
+        ps.setString(2, passwordPengguna);
+
+        return MainApp.konektor.getTable(ps);
+    }
+
+    // METHOD LOGIN - BARIS 142-147
+    public static User login(String email, String passwordPengguna) throws SQLException {
+        ResultSet rs = importUser(email, passwordPengguna);
+        if (rs.next()) {
+            return new User(rs.getInt(1), rs.getString(2), rs.getString(3));
+        }
+        return null;
+    }
 }
