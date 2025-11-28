@@ -13,11 +13,8 @@ public class Controller {
         publicList = new VideoList();
     }
 
-    public static Controller getInstance() {
-        if (instance == null) {
-            instance = new Controller();
-        }
-        return instance;
+    public void play(Scanner sc, Video video) throws SQLException {
+        video.play(user, sc);
     }
 
     public User getUser() {
@@ -129,4 +126,9 @@ public class Controller {
     public void showDetails(int index, Scanner sc) throws SQLException {
         publicList.showDetails(index, sc);
     }
+   // METHOD UPLOAD - BARIS 68-71
+public void uploadVideo(Video video) throws SQLException {
+    channel.uploadVideo(video);
+    publicList.addVideo(video);
+}
 }
