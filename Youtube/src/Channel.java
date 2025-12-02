@@ -18,7 +18,7 @@ public abstract class Channel {
         this.deskripsiKanal = deskripsiKanal;
         this.tanggalPembuatanKanal = java.sql.Date.valueOf(LocalDate.now());
     }
-
+    //constructor
     public Channel(int idKanal, String namaKanal, String deskripsiKanal, Date tanggal) {
         this.namaKanal = namaKanal;
         this.deskripsiKanal = deskripsiKanal;
